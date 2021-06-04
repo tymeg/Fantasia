@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1622828692 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\main.cpp
+	<iostream>
+	"classes.h"
+
+1622830197 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\classes.h
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+	<time.h>
+	<conio.h>
+	<windows.h>
+	<string.h>
+	<vector>
+	<map>
+
