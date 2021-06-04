@@ -10,6 +10,7 @@
 #include <string.h>
 #include <vector>
 #include <map>
+#include <memory>
 using namespace std;
 
 class Display // do zmiany w przypadku portowania na inny system
@@ -61,36 +62,36 @@ public:
     virtual void SpecialAction() = 0;
 
     // getters and setters
-    int getFieldNumber()
+    int GetFieldNumber()
     {
         return FieldNumber;
     }
-    void setFieldNumber(int n)
+    void SetFieldNumber(int n)
     {
         FieldNumber = n;
     }
 
-    int getStrength()
+    int GetStrength()
     {
         return Strength;
     }
-    void setStrength(int s)
+    void SetStrength(int s)
     {
         Strength = s;
     }
-    int getDexterity()
+    int GetDexterity()
     {
         return Dexterity;
     }
-    void setDexterity(int d)
+    void SetDexterity(int d)
     {
         Dexterity = d;
     }
-    int getIntelligence()
+    int GetIntelligence()
     {
         return Intelligence;
     }
-    void setIntelligence(int i)
+    void SetIntelligence(int i)
     {
         Intelligence = i;
     }
@@ -144,9 +145,9 @@ public:
 class Field
 {
 private:
-    int XCoord, YCoord;
+    int YCoord, XCoord;
 public:
-    Field(int X, int Y) : XCoord(X), YCoord(Y) {}
+    Field(int Y, int X) : YCoord(Y), XCoord(X) {}
     int GetX()
     {
         return XCoord;
@@ -163,8 +164,12 @@ protected:
     char Symbol;
     string Description;
 public:
-    SpecialField(int X, int Y, char s, string d) : Field(X, Y), Symbol(s), Description(d) {}
+    SpecialField(int Y, int X, char s, string d) : Field(Y, X), Symbol(s), Description(d) {}
     virtual void Event(Player* p) = 0;
+    char GetSymbol()
+    {
+        return Symbol;
+    }
     string GetDescription()
     {
         return Description;
@@ -176,10 +181,10 @@ class FieldMove : public SpecialField
 private:
     int HowMany; // + or - means forward/backwards
 public:
-    FieldMove(int X, int Y, char s, string d, int n) : SpecialField(X, Y, s, d), HowMany(n) {}
+    FieldMove(int Y, int X, char s, string d, int n) : SpecialField(Y, X, s, d), HowMany(n) {}
     void Event(Player* p)
     {
-        p->setFieldNumber(p->getFieldNumber()+HowMany);
+        p->SetFieldNumber(p->GetFieldNumber()+HowMany);
         // tu jeszcze zmiana na planszy, ponowne narysowanie
     }
 };
@@ -190,29 +195,44 @@ private:
     int HowMany;
     char Attribute;
 public:
-    FieldAttributeUp(int X, int Y, char s, string d, int n, char a) : SpecialField(X, Y, s, d), HowMany(n), Attribute(a) {}
+    FieldAttributeUp(int Y, int X, char s, string d, int n, char a) : SpecialField(Y, X, s, d), HowMany(n), Attribute(a) {}
     void Event(Player* p)
     {
         switch(Attribute)
         {
         case 's':
-            p->setStrength(p->getStrength()+HowMany);
+            p->SetStrength(p->GetStrength()+HowMany);
+            break;
         case 'd':
-            p->setDexterity(p->getDexterity()+HowMany);
+            p->SetDexterity(p->GetDexterity()+HowMany);
+            break;
         case 'i':
-            p->setIntelligence(p->getIntelligence()+HowMany);
+            p->SetIntelligence(p->GetIntelligence()+HowMany);
+            break;
         }
     }
 };
-
-
 
 class Game
 {
 private:
     const int Height, Length, FieldsNumber;
-    vector<Field> Track;
-    vector<vector<char>> Board;
+    vector<Field*> SpecialFields;
+    vector<vector<char>> Board
+    {
+        {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', 'M', '#'},
+        {'#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#'},
+        {'#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'},
+        {'#', 'S', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
+    };
     map<int, pair<int, int>> TrackToBoard
     {
         {0, {10, 1}}, {1, {9, 1}}, {2, {8, 1}}, {3, {7, 1}}, {4, {6, 1}}, {5, {5, 1}}, {6, {4, 1}}, {7, {3, 1}}, {8, {2, 1}}, {9, {1, 1}}, {10, {1, 2}},
@@ -227,28 +247,20 @@ private:
 public:
     Game() : Height(12), Length(15), FieldsNumber(76)
     {
-        vector<char> first_row, second_row, before_last_row, last_row, middle_row;
-        for (int i=0; i<Length; i++)
+        SpecialFields.push_back(new FieldAttributeUp(7, 1, '@', "O! Jestes silniejszy!", 3, 's'));
+
+        for (int i=0; i<(int)SpecialFields.size(); i++)
         {
-            first_row.push_back('#');
-            last_row.push_back('#');
-
-            i%2==0 ? middle_row.push_back('#') : middle_row.push_back(' ');
-            i%4==0 ? second_row.push_back('#') : second_row.push_back(' ');
-            i%4-2==0 ? before_last_row.push_back('#') : before_last_row.push_back(' ');
+            SpecialField* field = (SpecialField*)SpecialFields[i];
+            Board[field->GetY()][field->GetX()] = field->GetSymbol();
         }
-        last_row.at(1) = 'S';
-        first_row.at(Length-2) = 'M';
-        second_row.at(Length-1) = '#';
-        before_last_row.at(0) = '#';
-
-        Board.push_back(first_row);
-        Board.push_back(second_row);
-        for (int i=2; i<Height-2; i++)
-            Board.push_back(middle_row);
-        Board.push_back(before_last_row);
-        Board.push_back(last_row);
     }
+//    ~Game() // smart pointery?
+//    {
+//        for (auto p : SpecialFields)
+//            delete p;
+//        SpecialFields.clear();
+//    }
     void DrawBoard()
     {
         for (int i=0; i<(int)Board.size(); i++)
