@@ -74,8 +74,11 @@ public:
         {
             System::ClearScreen();
             string name;
-            cout << "Graczu " << i+1 << ", wprowadz swoje imie: ";
+            cout << "Graczu " << i+1 << ", wprowadz swoje imie (max 10 liter): ";
             cin >> name;
+            if (name.length() > 10)
+                name = name.substr(0, 10);
+
             System::ClearScreen();
             cout << name << ", wybierz klase postaci:" << endl
                  << "[R] Rycerz  - SILA 20, ZRECZNOSC 10, INTELIGENCJA 5.  Moc specjalna: " << endl
@@ -100,7 +103,7 @@ public:
                     break;
                 }
             }
-            next:
+next:
             System::ClearScreen();
             cout << "Utworzono postac!";
 //            System::Sleep1Sec();
@@ -148,6 +151,38 @@ public:
         {
             for (int j=0; j<(int)Board[i].size(); j++)
                 cout << Board[i][j];
+
+            switch(i) // wypisywanie graczy wraz z atrybutami
+            {
+            case 0:
+                cout << "  " << Players[0]->GetClass() << " " << Players[0]->GetName() << " (1): ";
+                break;
+            case 1:
+                cout << "    " << Players[0]->GetStrength() << "  " << Players[0]->GetDexterity() << "  " << Players[0]->GetIntelligence();
+                break;
+            case 3:
+                cout << "  " << Players[1]->GetClass() << " " << Players[1]->GetName() << " (2): ";
+                break;
+            case 4:
+                cout << "    " << Players[1]->GetStrength() << "  " << Players[1]->GetDexterity() << "  " << Players[1]->GetIntelligence();
+                break;
+            case 6:
+                if (PlayersNumber > 2)
+                    cout << "  " << Players[2]->GetClass() << " " << Players[2]->GetName() << " (3): ";
+                break;
+            case 7:
+                if (PlayersNumber > 2)
+                    cout << "    " << Players[2]->GetStrength() << "  " << Players[2]->GetDexterity() << "  " << Players[2]->GetIntelligence();
+                break;
+            case 9:
+                if (PlayersNumber > 3)
+                    cout << "  " << Players[3]->GetClass() << " " << Players[3]->GetName() << " (4): ";
+                break;
+            case 10:
+                if (PlayersNumber > 3)
+                    cout << "    " << Players[3]->GetStrength() << "  " << Players[3]->GetDexterity() << "  " << Players[3]->GetIntelligence();
+                break;
+            }
             cout << endl;
         }
         cout << endl;
@@ -203,11 +238,19 @@ public:
         int field_before = p->GetFieldNumber();
         p->SetFieldNumber(field_before+n);
         ClearField(field_before);
+
+
     }
     int RollDice()
     {
         int los = rand()%6 + 1;
-        cout << "\rWyrzuciles " << los << " oczek!";
+        cout << "\rWyrzuciles " << los;
+        if (los == 1)
+            cout << " oczko!";
+        else if (los == 5 || los == 6)
+            cout << " oczek!";
+        else
+            cout << " oczka!";
         System::Sleep1Sec();
         return los;
     }

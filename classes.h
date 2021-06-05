@@ -14,6 +14,7 @@ class Player // klasa abstrakcyjna
 {
 protected:
     string Name;
+    string Class;
     int Number;
     int FieldNumber;
     int Strength, Dexterity, Intelligence;
@@ -38,6 +39,10 @@ public:
     int GetNumber()
     {
         return Number;
+    }
+    string GetClass()
+    {
+        return Class;
     }
 
     int GetStrength()
@@ -71,6 +76,7 @@ class Knight : public Player
 public:
     Knight(string name, int number) : Player(name, number)
     {
+        Class = "Rycerz";
         Strength=20;
         Dexterity=10;
         Intelligence=5;
@@ -86,6 +92,7 @@ class Archer : public Player
 public:
     Archer(string name, int number) : Player(name, number)
     {
+        Class = "Lucznik";
         Strength=5;
         Dexterity=20;
         Intelligence=10;
@@ -101,6 +108,7 @@ class Mage : public Player
 public:
     Mage(string name, int number) : Player(name, number)
     {
+        Class = "Mag";
         Strength=5;
         Dexterity=10;
         Intelligence=20;
