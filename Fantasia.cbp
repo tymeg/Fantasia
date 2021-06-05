@@ -33,7 +33,9 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="classes.h" />
+		<Unit filename="gameclass.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="system.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

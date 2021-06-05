@@ -1,5 +1,5 @@
 #include <iostream>
-#include "classes.h"
+#include "gameclass.h"
 
 using namespace std;
 
@@ -7,5 +7,5 @@ int main()
 {
     Game test;
     test.Start();
-    //test.DrawBoard();
+    test.Play();
 }
