@@ -88,13 +88,13 @@ public:
                 switch(key)
                 {
                 case 'r':
-                    Players.push_back(new Knight(name, i));
+                    Players.push_back(new Knight(name, i+1));
                     goto next;
                 case 'l':
-                    Players.push_back(new Archer(name, i));
+                    Players.push_back(new Archer(name, i+1));
                     goto next;
                 case 'm':
-                    Players.push_back(new Mage(name, i));
+                    Players.push_back(new Mage(name, i+1));
                     goto next;
                 default:
                     break;
@@ -106,6 +106,7 @@ public:
 //            System::Sleep1Sec();
         }
         System::ClearScreen();
+        srand(time(0));
     }
 
     // WYSWIETLANIE PLANSZY
@@ -125,12 +126,20 @@ public:
             Player* player = Players[i];
             pair<int, int> coords = FieldsToBoard[player->GetFieldNumber()];
             char field_symbol = Board[coords.first][coords.second];
-            if (field_symbol == '0' || field_symbol == '1' || field_symbol == '2' || field_symbol == '3' || field_symbol == '4') // na polu jest inny gracz/gracze
+            char player_num = (char)player->GetNumber()+48;
+            if (field_symbol != player_num && (field_symbol == '0' || field_symbol == '1' || field_symbol == '2' || field_symbol == '3' || field_symbol == '4')) // na polu jest inny gracz/gracze
                 Board[coords.first][coords.second] = '0';
             else // wpp przykrywamy ewentualne pole specjalne
-                Board[coords.first][coords.second] = player->GetNumber()+48;
+                Board[coords.first][coords.second] = player_num;
         }
     }
+
+    void ClearField(int field)
+    {
+        pair<int, int> coords = FieldsToBoard[field];
+        Board[coords.first][coords.second] = ' ';
+    }
+
     void DrawBoard()
     {
         ShowSpecialFieldsOnBoard();
@@ -141,20 +150,67 @@ public:
                 cout << Board[i][j];
             cout << endl;
         }
+        cout << endl;
     }
 
     // ROZGRYWKA
-    void Play()
+    bool IsOver()
     {
-        DrawBoard();
-//        for (int i=0; i<PlayersNumber; i++)
-//        {
-//
-//        }
+        for (int i=0; i<(int)Players.size(); i++)
+        {
+            if (Players[i]->GetFieldNumber() != FieldsNumber-1)
+                return false;
+        }
+        return true;
     }
 
-    void Move() {}
-    int RollDice();
+    void Play()
+    {
+        while (!IsOver())
+        {
+            for (int i=0; i<PlayersNumber; i++)
+            {
+                System::ReturnCursor();
+                DrawBoard();
+                Player* player = Players[i];
+                cout << "Kolej na ciebie, " << player->GetName() << "!                           " << endl
+                     << "[ENTER] Rzuc kostka";
+                while (1)
+                {
+                    int key = System::GetKey();
+                    if (key == System::ENTER())
+                        break;
+                }
+
+                System::Sleep1Sec();
+                Move(player, RollDice());
+                System::ReturnCursor();
+                DrawBoard();
+                cout << "\n\n[ENTER] Dalej";
+                while (1)
+                {
+                    int key = System::GetKey();
+                    if (key == System::ENTER())
+                        break;
+                }
+                cout << "\r                     ";
+            }
+        }
+    }
+
+    void Move(Player* p, int n)
+    {
+        int field_before = p->GetFieldNumber();
+        p->SetFieldNumber(field_before+n);
+        ClearField(field_before);
+    }
+    int RollDice()
+    {
+        int los = rand()%6 + 1;
+        cout << "\rWyrzuciles " << los << " oczek!";
+        System::Sleep1Sec();
+        return los;
+    }
 };
 
 #endif // GAMECLASS_H_INCLUDED
