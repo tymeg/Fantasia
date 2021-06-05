@@ -1,9 +1,9 @@
 # depslib dependency file v1.0
-1622838406 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\main.cpp
+1622893266 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\main.cpp
 	<iostream>
 	"classes.h"
 
-1622841793 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\classes.h
+1622895407 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\classes.h
 	<stdio.h>
 	<stdlib.h>
 	<stdbool.h>

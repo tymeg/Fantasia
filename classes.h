@@ -13,11 +13,20 @@
 #include <memory>
 using namespace std;
 
-class Display // do zmiany w przypadku portowania na inny system
+class System // do zmiany w przypadku portowania na inny system
 {
 private:
-    string System = "Windows";
+    string OS = "Windows";
 public:
+    static int ESC()
+    {
+        return 27;
+    }
+    static int ENTER()
+    {
+        return 13;
+    }
+
     static void ClearScreen()
     {
         system("cls");
@@ -47,6 +56,11 @@ public:
     static void Sleep1Sec()
     {
         Sleep(1000);
+    }
+
+    static int GetKey()
+    {
+        return getch();
     }
 };
 
@@ -145,16 +159,12 @@ public:
 class Field
 {
 private:
-    int YCoord, XCoord;
+    int Number;
 public:
-    Field(int Y, int X) : YCoord(Y), XCoord(X) {}
-    int GetX()
+    Field(int num) : Number(num) {}
+    int GetNumber()
     {
-        return XCoord;
-    }
-    int GetY()
-    {
-        return YCoord;
+        return Number;
     }
 };
 
@@ -164,7 +174,7 @@ protected:
     char Symbol;
     string Description;
 public:
-    SpecialField(int Y, int X, char s, string d) : Field(Y, X), Symbol(s), Description(d) {}
+    SpecialField(int num, char s, string d) : Field(num), Symbol(s), Description(d) {}
     virtual void Event(Player* p) = 0;
     char GetSymbol()
     {
@@ -181,7 +191,7 @@ class FieldMove : public SpecialField
 private:
     int HowMany; // + or - means forward/backwards
 public:
-    FieldMove(int Y, int X, char s, string d, int n) : SpecialField(Y, X, s, d), HowMany(n) {}
+    FieldMove(int num, char s, string d, int n) : SpecialField(num, s, d), HowMany(n) {}
     void Event(Player* p)
     {
         p->SetFieldNumber(p->GetFieldNumber()+HowMany);
@@ -195,7 +205,7 @@ private:
     int HowMany;
     char Attribute;
 public:
-    FieldAttributeUp(int Y, int X, char s, string d, int n, char a) : SpecialField(Y, X, s, d), HowMany(n), Attribute(a) {}
+    FieldAttributeUp(int num, char s, string d, int n, char a) : SpecialField(num, s, d), HowMany(n), Attribute(a) {}
     void Event(Player* p)
     {
         switch(Attribute)
@@ -217,6 +227,8 @@ class Game
 {
 private:
     const int Height, Length, FieldsNumber;
+    int PlayersNumber;
+    vector<Player*> Players;
     vector<Field*> SpecialFields;
     vector<vector<char>> Board
     {
@@ -233,7 +245,7 @@ private:
         {'#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'},
         {'#', 'S', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
     };
-    map<int, pair<int, int>> TrackToBoard
+    map<int, pair<int, int>> FieldsToBoard
     {
         {0, {10, 1}}, {1, {9, 1}}, {2, {8, 1}}, {3, {7, 1}}, {4, {6, 1}}, {5, {5, 1}}, {6, {4, 1}}, {7, {3, 1}}, {8, {2, 1}}, {9, {1, 1}}, {10, {1, 2}},
         {11, {1, 3}}, {12, {2, 3}}, {13, {3, 3}}, {14, {4, 3}}, {15, {5, 3}}, {16, {6, 3}}, {17, {7, 3}}, {18, {8, 3}}, {19, {9, 3}}, {20, {10, 3}}, {21, {10, 4}},
@@ -245,17 +257,19 @@ private:
     };
 
 public:
-    Game() : Height(12), Length(15), FieldsNumber(76)
+    Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specjalnych, wypelnienie nimi juz zainicjalizowanej Board
     {
-        SpecialFields.push_back(new FieldAttributeUp(7, 1, '@', "O! Jestes silniejszy!", 3, 's'));
+        SpecialFields.push_back(new FieldAttributeUp(3, '@', "O! Jestes silniejszy!", 3, 's'));
+        SpecialFields.push_back(new FieldMove(8, '+', "Skrot!", 4));
 
         for (int i=0; i<(int)SpecialFields.size(); i++)
         {
             SpecialField* field = (SpecialField*)SpecialFields[i];
-            Board[field->GetY()][field->GetX()] = field->GetSymbol();
+            pair<int, int> coords = FieldsToBoard[field->GetNumber()];
+            Board[coords.first][coords.second] = field->GetSymbol();
         }
     }
-//    ~Game() // smart pointery?
+//    ~Game() // delete na elementach wektorow Players i SpecialFields, albo smart pointery?
 //    {
 //        for (auto p : SpecialFields)
 //            delete p;
@@ -271,8 +285,66 @@ public:
         }
     }
 
+    void Start()
+    {
+        System::HideCursor();
+        cout << "Bla bla bla, wprowadzenie do historii\nWcisnij ENTER by kontynuowac...";
+        while (1)
+        {
+            int key = System::GetKey();
+            if (key == System::ENTER())
+                break;
+        }
+        System::ClearScreen();
+        cout << "Wybierz liczbe graczy:\n[2] [3] [4]";
+        while (1)
+        {
+            int key = System::GetKey();
+            if (key >= '2' && key <= '4')
+            {
+                PlayersNumber = key-48;
+                break;
+            }
+        }
+        for (int i=0; i<PlayersNumber; i++)
+        {
+            System::ClearScreen();
+            string name;
+            cout << "Graczu " << i+1 << ", wprowadz swoje imie: ";
+            cin >> name;
+            System::ClearScreen();
+            cout << name << ", wybierz klase postaci:" << endl
+                 << "[R] Rycerz  - SILA 20, ZRECZNOSC 10, INTELIGENCJA 5.  Moc specjalna: " << endl
+                 << "[L] Lucznik - SILA 5,  ZRECZNOSC 20, INTELIGENCJA 10. Moc specjalna: " << endl
+                 << "[M] Mag     - SILA 5,  ZRECZNOSC 10, INTELIGENCJA 20. Moc specjalna: " << endl;
+
+            while(1)
+            {
+                int key = System::GetKey();
+                switch(key)
+                {
+                case 'r':
+                    Players.push_back(new Knight(name, i));
+                    goto next;
+                case 'l':
+                    Players.push_back(new Archer(name, i));
+                    goto next;
+                case 'm':
+                    Players.push_back(new Mage(name, i));
+                    goto next;
+                default:
+                    break;
+                }
+            }
+            next:
+            System::ClearScreen();
+            cout << "Udalo sie!";
+            System::Sleep1Sec();
+        }
+    }
+
     void Move() {}
-    void RollDice() {}
+    int RollDice();
 };
 
 #endif // CLASSES_H_INCLUDED

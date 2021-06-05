@@ -6,5 +6,6 @@ using namespace std;
 int main()
 {
     Game test;
-    test.DrawBoard();
+    test.Start();
+    //test.DrawBoard();
 }
