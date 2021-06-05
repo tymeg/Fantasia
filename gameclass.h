@@ -205,7 +205,7 @@ next:
         {
             for (int i=0; i<PlayersNumber; i++)
             {
-                System::ReturnCursor();
+                System::ClearScreen();
                 DrawBoard();
                 Player* player = Players[i];
                 cout << "Kolej na ciebie, " << player->GetName() << "!                           " << endl
@@ -219,16 +219,15 @@ next:
 
                 System::Sleep1Sec();
                 Move(player, RollDice());
-                System::ReturnCursor();
+                System::ClearScreen();
                 DrawBoard();
-                cout << "\n\n[ENTER] Dalej";
+                cout << "\n[ENTER] Dalej";
                 while (1)
                 {
                     int key = System::GetKey();
                     if (key == System::ENTER())
                         break;
                 }
-                cout << "\r                     ";
             }
         }
     }
@@ -238,8 +237,26 @@ next:
         int field_before = p->GetFieldNumber();
         p->SetFieldNumber(field_before+n);
         ClearField(field_before);
+        System::ClearScreen();
+        DrawBoard();
 
-
+        int field_after = p->GetFieldNumber();
+        for (int i=0; i<(int)SpecialFields.size(); i++)
+        {
+            SpecialField* spec = SpecialFields[i];
+            if (field_after == spec->GetNumber())
+            {
+                cout << endl << spec->GetDescription();
+                cout << "\n[ENTER] Dalej";
+                while (1)
+                {
+                    int key = System::GetKey();
+                    if (key == System::ENTER())
+                        break;
+                }
+                spec->Event(p);
+            }
+        }
     }
     int RollDice()
     {

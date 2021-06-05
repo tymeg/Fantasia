@@ -158,7 +158,6 @@ public:
     void Event(Player* p)
     {
         p->SetFieldNumber(p->GetFieldNumber()+HowMany);
-        // tu jeszcze zmiana na planszy, ponowne narysowanie
     }
 };
 
