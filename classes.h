@@ -16,12 +16,13 @@ protected:
     string Name;
     string Class;
     int Number;
-    int FieldNumber;
+    int FieldNumber = 0;
     int Strength, Dexterity, Intelligence;
-    bool Turn;
+    bool UsedSpecialPower = false;
+    bool Turn = true;
 public:
-    Player(string name, int number) : Name(name), Number(number), FieldNumber(0), Turn(true) {}
-    virtual void SpecialAction() = 0;
+    Player(string name, int number) : Name(name), Number(number) {}
+    virtual void SpecialPower() = 0;
     bool LosesTurn()
     {
         if (Turn)
@@ -84,6 +85,15 @@ public:
     {
         Intelligence = i;
     }
+
+    bool CheckUsedSpecialPower()
+    {
+        return UsedSpecialPower;
+    }
+    void ToggleUsedSpecialPower()
+    {
+        UsedSpecialPower = true;
+    }
 };
 
 class Knight : public Player
@@ -96,7 +106,7 @@ public:
         Dexterity=10;
         Intelligence=5;
     }
-    void SpecialAction()
+    void SpecialPower()
     {
         cout << "Knight's special action!";
     }
@@ -112,9 +122,9 @@ public:
         Dexterity=20;
         Intelligence=10;
     }
-    void SpecialAction()
+    void SpecialPower() // brzydkie
     {
-        cout << "Archer's special action!";
+        cout << "\rUzywasz Sprintu - w tej kolejce wynik rzutu kostka bedzie podwojony!";
     }
 };
 
@@ -128,9 +138,9 @@ public:
         Dexterity=10;
         Intelligence=20;
     }
-    void SpecialAction()
+    void SpecialPower() // brzydkie
     {
-        cout << "Mage's special action!";
+        cout << "\rUzywasz Lodowego Deszczu - kazdy z pozostalych graczy traci kolejke!";
     }
 };
 

@@ -8,4 +8,6 @@ int main()
     Game test;
     test.Start();
     test.Play();
+
+    return 0;
 }

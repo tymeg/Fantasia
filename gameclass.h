@@ -220,14 +220,44 @@ next:
                     DrawBoard();
                     cout << "Kolej na ciebie, " << player->GetName() << "!" << endl
                          << "[ENTER] Rzuc kostka";
-                    WaitForEnter();
-
+                    if (player->GetClass() == "Rycerz" || player->CheckUsedSpecialPower())
+                        WaitForEnter();
+                    else
+                    {
+                        cout << " [M] Uzyj Mocy Specjalnej";
+                        while (1)
+                        {
+                            int key = System::GetKey();
+                            if (key == System::ENTER())
+                                break;
+                            else if (key == 'm')
+                            {
+                                player->SpecialPower();
+                                player->ToggleUsedSpecialPower();
+                                cout << endl << "[ENTER] Rzuc kostka";
+                                WaitForEnter();
+                                if (player->GetClass() == "Lucznik") // brzydkie - Play() wykonuje funkcjonalnosci SpecialPower()
+                                {
+                                    System::Sleep1Sec();
+                                    Move(player, 2*RollDice());
+                                    goto after_sprint;
+                                }
+                                else
+                                {
+                                    for (int i=0; i<(int)Players.size(); i++)
+                                    {
+                                        if (Players[i]->GetNumber() != player->GetNumber())
+                                            Players[i]->LoseTurn();
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     System::Sleep1Sec();
                     Move(player, RollDice());
-//                    System::ClearScreen();
-//                    DrawBoard();
-//                    cout << endl << "[ENTER] Dalej";
-//                    WaitForEnter();
+after_sprint:
+                    ;
                 }
             }
         }
@@ -265,16 +295,16 @@ next:
             }
         }
     }
-    int RollDice()
+    int RollDice() // brzydkie
     {
         int los = rand()%6 + 1;
         cout << "\rWyrzuciles " << los;
         if (los == 1)
-            cout << " oczko!";
+            cout << " oczko!                                    ";
         else if (los == 5 || los == 6)
-            cout << " oczek!";
+            cout << " oczek!                                    ";
         else
-            cout << " oczka!";
+            cout << " oczka!                                    ";
         System::Sleep1Sec();
         return los;
     }
