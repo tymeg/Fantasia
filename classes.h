@@ -18,9 +18,24 @@ protected:
     int Number;
     int FieldNumber;
     int Strength, Dexterity, Intelligence;
+    bool Turn;
 public:
-    Player(string name, int number) : Name(name), Number(number), FieldNumber(0) {}
+    Player(string name, int number) : Name(name), Number(number), FieldNumber(0), Turn(true) {}
     virtual void SpecialAction() = 0;
+    bool LosesTurn()
+    {
+        if (Turn)
+            return false;
+        else
+        {
+            Turn = true;
+            return true;
+        }
+    }
+    void LoseTurn()
+    {
+        Turn = false;
+    }
 
     // gettery i settery
     int GetFieldNumber()
@@ -138,7 +153,7 @@ protected:
     string Description;
 public:
     SpecialField(int num, char s, string d) : Field(num), Symbol(s), Description(d) {}
-    virtual void Event(Player* p) = 0;
+    virtual int Event(Player* p) = 0; // zwraca 0, jesli na danym polu gracz cos traci, 1 gdy nie traci, 2 gdy nie ma takiego rozroznienia
     char GetSymbol()
     {
         return Symbol;
@@ -152,12 +167,13 @@ public:
 class FieldMove : public SpecialField
 {
 private:
-    int HowMany; // + or - means forward/backwards
+    int HowMany; // + lub - oznacza przemieszczenie do przodu/do tylu
 public:
     FieldMove(int num, char s, string d, int n) : SpecialField(num, s, d), HowMany(n) {}
-    void Event(Player* p)
+    int Event(Player* p)
     {
         p->SetFieldNumber(p->GetFieldNumber()+HowMany);
+        return 2;
     }
 };
 
@@ -168,7 +184,7 @@ private:
     char Attribute;
 public:
     FieldAttributeUp(int num, char s, string d, int n, char a) : SpecialField(num, s, d), HowMany(n), Attribute(a) {}
-    void Event(Player* p)
+    int Event(Player* p)
     {
         switch(Attribute)
         {
@@ -182,7 +198,77 @@ public:
             p->SetIntelligence(p->GetIntelligence()+HowMany);
             break;
         }
+        return 2;
     }
 };
+
+class SpecialFieldWinOrLose : public SpecialField // klasa abstrakcyjna (nie implementuje Event ze SpecialField)
+{
+private:
+    string WinMessage, LoseMessage;
+public:
+    SpecialFieldWinOrLose(int num, char s, string d, string win, string lose) : SpecialField(num, s, d), WinMessage(win), LoseMessage(lose) {}
+
+    string GetWinMessage()
+    {
+        return WinMessage;
+    }
+    string GetLoseMessage()
+    {
+        return LoseMessage;
+    }
+};
+
+class FieldLoseTurn : public SpecialFieldWinOrLose
+{
+private:
+    int AttributeThreshold;
+    char Attribute;
+public:
+    FieldLoseTurn(int num, char s, string d, string win, string lose, int n, char a) : SpecialFieldWinOrLose(num, s, d, win, lose), AttributeThreshold(n), Attribute(a) {}
+    int Event(Player* p)
+    {
+        int attribute_level;
+        switch(Attribute)
+        {
+        case 's':
+            attribute_level = p->GetStrength();
+            break;
+        case 'd':
+            attribute_level = p->GetDexterity();
+            break;
+        case 'i':
+            attribute_level = p->GetIntelligence();
+            break;
+        }
+        if (attribute_level >= AttributeThreshold)
+            return 1;
+        else
+        {
+            p->LoseTurn();
+            return 0;
+        }
+    }
+
+};
+
+class FieldFight : public SpecialFieldWinOrLose
+{
+private:
+    int DiceThreshold;
+    char Attribute;
+public:
+    FieldFight(int num, char s, string d, string win, string lose, int n, char a) : SpecialFieldWinOrLose(num, s, d, win, lose), DiceThreshold(n), Attribute(a) {}
+//    int CalculateDiceTreshold(int player_attribute)
+//    {
+//        return 1;
+//    }
+//    int Event(Player* p)
+//    {
+//        return 1;
+//    }
+
+};
+
 
 #endif // CLASSES_H_INCLUDED

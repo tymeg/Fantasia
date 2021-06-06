@@ -39,8 +39,10 @@ private:
 public:
     Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specjalnych
     {
-        SpecialFields.push_back(new FieldAttributeUp(3, '@', "O! Jestes silniejszy!", 3, 's'));
+        SpecialFields.push_back(new FieldAttributeUp(3, '$', "O! Jestes silniejszy!", 3, 's'));
         SpecialFields.push_back(new FieldMove(8, '+', "Skrot!", 4));
+        SpecialFields.push_back(new FieldLoseTurn(5, 'X', "Spotykasz Golluma, ktory nie chce cie przepuscic, jesli nie rozwiazesz jego zagadki...", "Tak! Udzielasz poprawnej odpowiedzi i Gollum cie puszcza.", "Niestety, nie mozesz wymyslec odpowiedzi. Wracasz sie i wybierasz inna droge.", 10, 'i'));
+        SpecialFields.push_back(new FieldLoseTurn(11, 'X', "Droge zagradza wielki, ciezki kamien...", "Udaje ci sie go troche przepchnac i przejsc dalej.", "Probujesz nieco go przepchnac, ale nic z tego, nie masz tyle sily. Wracasz sie i szukasz okreznej drogi.", 15, 's'));
     }
 //    ~Game() // delete na elementach wektorow Players i SpecialFields, albo smart pointery?
 //    {
@@ -49,16 +51,21 @@ public:
 //        SpecialFields.clear();
 //    }
 
-    void Start()
+    void WaitForEnter() // funkcja pomocnicza
     {
-        System::HideCursor();
-        cout << "Bla bla bla, wprowadzenie do historii\nWcisnij ENTER by kontynuowac...";
         while (1)
         {
             int key = System::GetKey();
             if (key == System::ENTER())
                 break;
         }
+    }
+
+    void Start()
+    {
+        System::HideCursor();
+        cout << "Bla bla bla, wprowadzenie do historii\nWcisnij ENTER by kontynuowac...";
+        WaitForEnter();
         System::ClearScreen();
         cout << "Wybierz liczbe graczy:\n[2] [3] [4]";
         while (1)
@@ -130,8 +137,8 @@ next:
             pair<int, int> coords = FieldsToBoard[player->GetFieldNumber()];
             char field_symbol = Board[coords.first][coords.second];
             char player_num = (char)player->GetNumber()+48;
-            if (field_symbol != player_num && (field_symbol == '0' || field_symbol == '1' || field_symbol == '2' || field_symbol == '3' || field_symbol == '4')) // na polu jest inny gracz/gracze
-                Board[coords.first][coords.second] = '0';
+            if (field_symbol != player_num && (field_symbol == '@' || (field_symbol >= '1' && field_symbol <= '4'))) // na polu jest inny gracz/gracze
+                Board[coords.first][coords.second] = '@';
             else // wpp przykrywamy ewentualne pole specjalne
                 Board[coords.first][coords.second] = player_num;
         }
@@ -205,28 +212,22 @@ next:
         {
             for (int i=0; i<PlayersNumber; i++)
             {
-                System::ClearScreen();
-                DrawBoard();
                 Player* player = Players[i];
-                cout << "Kolej na ciebie, " << player->GetName() << "!                           " << endl
-                     << "[ENTER] Rzuc kostka";
-                while (1)
+                if (player->LosesTurn() || player->GetFieldNumber()==FieldsNumber-1) {} // jesli gracz traci kolejke, albo jest juz na mecie, to nie wykonuje ruchu
+                else
                 {
-                    int key = System::GetKey();
-                    if (key == System::ENTER())
-                        break;
-                }
+                    System::ClearScreen();
+                    DrawBoard();
+                    cout << "Kolej na ciebie, " << player->GetName() << "!" << endl
+                         << "[ENTER] Rzuc kostka";
+                    WaitForEnter();
 
-                System::Sleep1Sec();
-                Move(player, RollDice());
-                System::ClearScreen();
-                DrawBoard();
-                cout << "\n[ENTER] Dalej";
-                while (1)
-                {
-                    int key = System::GetKey();
-                    if (key == System::ENTER())
-                        break;
+                    System::Sleep1Sec();
+                    Move(player, RollDice());
+//                    System::ClearScreen();
+//                    DrawBoard();
+//                    cout << endl << "[ENTER] Dalej";
+//                    WaitForEnter();
                 }
             }
         }
@@ -246,15 +247,21 @@ next:
             SpecialField* spec = SpecialFields[i];
             if (field_after == spec->GetNumber())
             {
-                cout << endl << spec->GetDescription();
-                cout << "\n[ENTER] Dalej";
-                while (1)
+                cout << endl << spec->GetDescription() << endl;
+                cout << "[ENTER] Dalej";
+                WaitForEnter();
+                int flag = spec->Event(p);
+                if (flag == 2) {}
+                else
                 {
-                    int key = System::GetKey();
-                    if (key == System::ENTER())
-                        break;
+                    SpecialFieldWinOrLose* win_or_lose = (SpecialFieldWinOrLose*)spec;
+                    if (flag == 1)
+                        cout << "\r" << win_or_lose->GetWinMessage();
+                    else if (flag == 0)
+                        cout << "\r" << win_or_lose->GetLoseMessage() << endl << "Tracisz kolejke!";
+                    cout << endl << "[ENTER] Dalej";
+                    WaitForEnter();
                 }
-                spec->Event(p);
             }
         }
     }
