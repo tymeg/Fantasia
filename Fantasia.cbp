@@ -33,7 +33,7 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="classes.h" />
-		<Unit filename="gameclass.h" />
+		<Unit filename="gameclass.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="system.h" />
 		<Extensions>

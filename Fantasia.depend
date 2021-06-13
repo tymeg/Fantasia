@@ -1,9 +1,9 @@
 # depslib dependency file v1.0
-1622994897 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\main.cpp
-	<iostream>
-	"gameclass.h"
+1623623912 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\main.cpp
+	"classes.h"
 
-1623615990 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\classes.h
+1623624941 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\classes.h
+	<iostream>
 	<stdio.h>
 	<stdlib.h>
 	<stdbool.h>
@@ -12,10 +12,14 @@
 	<map>
 	"system.h"
 
-1623615904 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\gameclass.h
+1623621387 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\gameclass.h
 	"classes.h"
 
-1623607037 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\system.h
+1623623912 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\system.h
+	<string>
 	<conio.h>
 	<windows.h>
+
+1623624600 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\gameclass.cpp
+	"classes.h"
 

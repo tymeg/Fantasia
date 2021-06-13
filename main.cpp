@@ -1,5 +1,4 @@
-#include <iostream>
-#include "gameclass.h"
+#include "classes.h"
 
 using namespace std;
 

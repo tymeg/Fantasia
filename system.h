@@ -1,14 +1,14 @@
 #ifndef SYSTEM_H_INCLUDED
 #define SYSTEM_H_INCLUDED
 
+#include <string>
 #include <conio.h>
 #include <windows.h>
-using namespace std;
 
 class System // do zmiany w przypadku portowania na inny system
 {
 private:
-    string OS = "Windows";
+    std::string OS = "Windows";
 public:
     static int ESC()
     {
