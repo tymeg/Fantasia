@@ -19,10 +19,12 @@ protected:
     int FieldNumber = 0;
     int Strength, Dexterity, Intelligence;
     bool UsedSpecialPower = false;
+    int MovesNumberMultiplier = 1;
     bool Turn = true;
-public:
+
     Player(string name, int number) : Name(name), Number(number) {}
-    virtual void SpecialPower() = 0;
+public:
+    virtual void SpecialPower(vector<Player*> &players) = 0;
     bool LosesTurn()
     {
         if (Turn)
@@ -94,6 +96,15 @@ public:
     {
         UsedSpecialPower = true;
     }
+
+    int GetMovesNumberMultiplier()
+    {
+        return MovesNumberMultiplier;
+    }
+    void SetMovesNumberMultiplier(int mult)
+    {
+        MovesNumberMultiplier = mult;
+    }
 };
 
 class Knight : public Player
@@ -106,9 +117,17 @@ public:
         Dexterity=10;
         Intelligence=5;
     }
-    void SpecialPower()
+    void SpecialPower(vector<Player*> &players)
     {
-        cout << "Knight's special action!";
+        cout << "Knight's special power!";
+        for (int i=0; i<(int)players.size(); i++)
+        {
+            if (players[i]->GetNumber() == GetNumber())
+            {
+                players[i]->LosesTurn();
+                break;
+            }
+        }
     }
 };
 
@@ -122,9 +141,17 @@ public:
         Dexterity=20;
         Intelligence=10;
     }
-    void SpecialPower() // brzydkie
+    void SpecialPower(vector<Player*> &players)
     {
         cout << "\rUzywasz Sprintu - w tej kolejce wynik rzutu kostka bedzie podwojony!";
+        for (int i=0; i<(int)players.size(); i++)
+        {
+            if (players[i]->GetNumber() == GetNumber())
+            {
+                players[i]->SetMovesNumberMultiplier(2);
+                break;
+            }
+        }
     }
 };
 
@@ -138,9 +165,14 @@ public:
         Dexterity=10;
         Intelligence=20;
     }
-    void SpecialPower() // brzydkie
+    void SpecialPower(vector<Player*> &players)
     {
         cout << "\rUzywasz Lodowego Deszczu - kazdy z pozostalych graczy traci kolejke!";
+        for (int i=0; i<(int)players.size(); i++)
+        {
+            if (players[i]->GetNumber() != GetNumber())
+                players[i]->LoseTurn();
+        }
     }
 };
 
@@ -251,9 +283,9 @@ public:
             attribute_level = p->GetIntelligence();
             break;
         }
-        if (attribute_level >= AttributeThreshold)
+        if (attribute_level >= AttributeThreshold) // win
             return 1;
-        else
+        else // lose
         {
             p->LoseTurn();
             return 0;

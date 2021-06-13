@@ -232,32 +232,18 @@ next:
                                 break;
                             else if (key == 'm')
                             {
-                                player->SpecialPower();
+                                player->SpecialPower(Players);
                                 player->ToggleUsedSpecialPower();
                                 cout << endl << "[ENTER] Rzuc kostka";
                                 WaitForEnter();
-                                if (player->GetClass() == "Lucznik") // brzydkie - Play() wykonuje funkcjonalnosci SpecialPower()
-                                {
-                                    System::Sleep1Sec();
-                                    Move(player, 2*RollDice());
-                                    goto after_sprint;
-                                }
-                                else
-                                {
-                                    for (int i=0; i<(int)Players.size(); i++)
-                                    {
-                                        if (Players[i]->GetNumber() != player->GetNumber())
-                                            Players[i]->LoseTurn();
-                                    }
-                                    break;
-                                }
+                                break;
                             }
                         }
                     }
                     System::Sleep1Sec();
-                    Move(player, RollDice());
-after_sprint:
-                    ;
+                    Move(player, player->GetMovesNumberMultiplier() * RollDice());
+                    if (player->GetMovesNumberMultiplier() > 1)
+                        player->SetMovesNumberMultiplier(1);
                 }
             }
         }

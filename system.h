@@ -56,5 +56,4 @@ public:
     }
 };
 
-
 #endif // SYSTEM_H_INCLUDED
