@@ -1,6 +1,10 @@
 #include "classes.h"
 using namespace std;
 
+// ---------------
+// METODY PRYWATNE
+// ---------------
+
 // WYSWIETLANIE PLANSZY
 void Game::ShowSpecialFieldsOnBoard()
 {
@@ -91,10 +95,21 @@ bool Game::IsOver()
 void Game::Move(Player* p, int n)
 {
     int field_before = p->GetFieldNumber();
-    p->SetFieldNumber(field_before+n);
+    if (field_before+n > FieldsNumber-1) // gracz na mecie
+        p->SetFieldNumber(FieldsNumber-1);
+    else
+        p->SetFieldNumber(field_before+n);
+
     ClearField(field_before);
     System::ClearScreen();
     DrawBoard();
+    if (p->GetFieldNumber() == FieldsNumber-1)
+    {
+        cout << endl << "Gracz " << p->GetName() << " na mecie!";
+        System::Sleep1Sec();
+        Result.push_back(p);
+        return;
+    }
 
     int field_after = p->GetFieldNumber();
     for (int i=0; i<(int)SpecialFields.size(); i++)
@@ -144,6 +159,33 @@ void Game::Move(Player* p, int n)
     }
 }
 
+void Game::GameEnd() // wypisanie wynikow wedlug kolejnosci w wektorze Result, wyczyszczenie tego wektora
+{
+    System::ClearScreen();
+    System::HideCursor();
+    cout << "Bla bla bla - koniec fabuly.";
+
+    cout << endl << endl << "Wyniki: " << endl;
+    for (int i=0; i<(int)Result.size(); i++)
+        cout << i+1 << ". " << Result[i]->GetName() << endl;
+
+    cout << endl << "[ENTER] Powrot do Menu";
+    WaitForEnter();
+
+    Result.clear();
+}
+
+void Game::ResetGame() // czyszczenie wektora Players
+{
+    for (auto p : Players)
+        delete p;
+    Players.clear();
+}
+
+// ----------------
+// METODY PUBLICZNE
+// ----------------
+
 // KOSNTRUKTOR
 Game::Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specjalnych
 {
@@ -154,12 +196,18 @@ Game::Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specja
     SpecialFields.push_back(new FieldFight(13, 'W', "Atakuje cie bandyta!", "Spuszczasz mu porzadne lanie! Po otrzymaniu kilku niezlych ciosow rzezimieszek rzuca sie w ucieczke :)", "Dostajesz kilka mocnych ciosow, tracisz przytomnosc. Dopiero po godzinie budzisz sie, oczywiscie bez pieniedzy :(", 's'));
     SpecialFields.push_back(new FieldFight(4, 'W', "Przed toba materializuje sie potezny czarnoksieznik!", "Przechytrzasz go xD Brawo!", "Mag pokonuje cie swoimi czarami. Potrzebujesz regeneracji xD", 'i'));
 }
-//    Game::~Game() // delete na elementach wektorow Players i SpecialFields, albo smart pointery?
-//    {
-//        for (auto p : SpecialFields)
-//            delete p;
-//        SpecialFields.clear();
-//    }
+
+// DESTRUKTOR
+Game::~Game() // delete na elementach wektorow Players i SpecialFields, albo smart pointery?
+{
+    for (auto f : SpecialFields)
+        delete f;
+    SpecialFields.clear();
+
+    for (auto p : Players)
+        delete p;
+    Players.clear();
+}
 
 int Game::RollDice()
 {
@@ -185,8 +233,54 @@ void Game::WaitForEnter()
     }
 }
 
+void Game::Menu()
+{
+    int key;
+    while(1)    // wyswietlanie menu
+    {
+        System::ClearScreen();
+        System::HideCursor();
+        cout << endl;
+        cout << " ### ### ##  ### ### ### # ###" << endl
+             << " #   # # ##   #  # # #   # # #" << endl
+             << " ### ### # #  #  ### ### # ###" << endl
+             << " #   # # # #  #  # #   # # # #" << endl
+             << " #   # # # #  #  # # ### # # #" << endl
+             << "                       by     " << endl
+             << "                         Tymeg" << endl
+             << "         [1] START            " << endl
+             << "         [2] ZASADY           " << endl
+             << "         [3] WYJSCIE          " << endl;
+
+        while(1)    // oczekiwanie na wejscie z klawiatury uzytkownika
+        {
+            System::HideCursor();
+            key = System::GetKey();
+            if (key == '1')    // START
+                return;
+            else if (key == '2') // ZASADY GRY
+            {
+                System::ClearScreen();
+                cout << "[ESC] Menu" << endl << endl;
+                cout << " Zasady sa tak proste, ze nie ma czego tlumaczyc";
+
+                while(1)    // powrot do menu
+                {
+                    key = System::GetKey();
+                    if (key == System::ESC())
+                        goto menu;
+                }
+            }
+            else if (key == '3') // WYJSCIE
+                exit(0);
+        }
+        menu:;
+    }
+}
+
 void Game::Start()
 {
+    System::ClearScreen();
     System::HideCursor();
     cout << "Bla bla bla, wprowadzenie do historii\nWcisnij ENTER by kontynuowac...";
     WaitForEnter();
@@ -211,10 +305,10 @@ void Game::Start()
             name = name.substr(0, 10);
 
         System::ClearScreen();
-        cout << name << ", wybierz klase postaci:" << endl
-             << "[R] Rycerz  - SILA 20, ZRECZNOSC 10, INTELIGENCJA 5.  Moc specjalna: " << endl
-             << "[L] Lucznik - SILA 5,  ZRECZNOSC 20, INTELIGENCJA 10. Moc specjalna: " << endl
-             << "[M] Mag     - SILA 5,  ZRECZNOSC 10, INTELIGENCJA 20. Moc specjalna: " << endl;
+        cout << name << ", wybierz klase postaci:" << endl << endl
+              << " [R] Rycerz  - SILA 20, ZRECZNOSC 10, INTELIGENCJA 5\n     Moc Specjalna: Szal Bitewny \n     W przypadku przegranej walki mozesz odwrocic losy i uniknac utraty kolejki" << endl << endl
+             << " [L] Lucznik - SILA 5,  ZRECZNOSC 20, INTELIGENCJA 10\n     Moc specjalna: Sprint \n     W najblizszym ruchu przemiescisz sie o dwukrotnosc liczby wyrzuconych oczek" << endl << endl
+             << " [M] Mag     - SILA 5,  ZRECZNOSC 10, INTELIGENCJA 20\n     Moc specjalna: Lodowy Deszcz \n     Pozostali gracze traca jedna kolejke" << endl;
 
         while(1)
         {
@@ -254,14 +348,31 @@ void Game::Play()
             else
             {
                 System::ClearScreen();
+                System::HideCursor();
                 DrawBoard();
                 cout << "Kolej na ciebie, " << player->GetName() << "!" << endl
                      << "[ENTER] Rzuc kostka";
                 if (player->GetClass() == "Rycerz" || player->CheckUsedSpecialPower())
-                    WaitForEnter();
+                {
+                    cout << endl << endl << "[ESC] Wyjdz do Menu";
+                    while (1)
+                    {
+                        int key = System::GetKey();
+                        if (key == System::ENTER())
+                            break;
+                        else if (key == System::ESC()) // reset gry, wyjscie do menu
+                        {
+                            ClearField(player->GetFieldNumber());
+                            ResetGame();
+                            Menu();
+                            return; // wychodzi z Play, w glownej petli w main wykona sie ponownie Start i Play
+                        }
+                    }
+                }
                 else
                 {
                     cout << " [M] Uzyj Mocy Specjalnej";
+                    cout << endl << endl << "[ESC] Wyjdz do Menu";
                     while (1)
                     {
                         int key = System::GetKey();
@@ -275,6 +386,13 @@ void Game::Play()
                             WaitForEnter();
                             break;
                         }
+                        else if (key == System::ESC()) // reset gry, wyjscie do menu
+                        {
+                            ClearField(player->GetFieldNumber());
+                            ResetGame();
+                            Menu();
+                            return; // wychodzi z Play, w glownej petli w main wykona sie ponownie Start i Play
+                        }
                     }
                 }
                 System::Sleep1Sec();
@@ -284,11 +402,15 @@ void Game::Play()
             }
         }
     }
+    ClearField(FieldsNumber-1);
+    GameEnd();
+    ResetGame();
 }
 
 
 // -----------------------------------------------------------------
 // DEFINICJA EVENT W FIELDFIGHT (korzysta z metod statycznych z Game)
+// -----------------------------------------------------------------
 int FieldFight::Event(Player* p)
 {
     int attribute_level;

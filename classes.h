@@ -26,8 +26,9 @@ protected:
     int MovesNumberMultiplier = 1;
     bool Turn = true;
 
-    Player(std::string name, int number) : Name(name), Number(number) {}
 public:
+    Player(std::string name, int number) : Name(name), Number(number) {}
+    virtual ~Player() {}
     virtual void SpecialPower(std::vector<Player*> &players) = 0;
     bool LosesTurn()
     {
@@ -121,6 +122,7 @@ public:
         Dexterity=10;
         Intelligence=5;
     }
+    ~Knight() {}
     void SpecialPower(std::vector<Player*> &players)
     {
         std::cout << "\rUzywasz Szalu Bitewnego!                ";
@@ -145,6 +147,7 @@ public:
         Dexterity=20;
         Intelligence=10;
     }
+    ~Archer() {}
     void SpecialPower(std::vector<Player*> &players)
     {
         std::cout << "\rUzywasz Sprintu - w tej kolejce wynik rzutu kostka bedzie podwojony!";
@@ -169,6 +172,7 @@ public:
         Dexterity=10;
         Intelligence=20;
     }
+    ~Mage() {}
     void SpecialPower(std::vector<Player*> &players)
     {
         std::cout << "\rUzywasz Lodowego Deszczu - kazdy z pozostalych graczy traci kolejke!";
@@ -199,6 +203,7 @@ protected:
     std::string Description;
 public:
     SpecialField(int num, char s, std::string d) : Field(num), Symbol(s), Description(d) {}
+    virtual ~SpecialField() {}
     virtual int Event(Player* p) = 0; // zwraca 0, jesli na danym polu gracz cos traci, 1 gdy nie traci, 2 gdy nie ma takiego rozroznienia
     char GetSymbol()
     {
@@ -216,6 +221,7 @@ private:
     int HowMany; // + lub - oznacza przemieszczenie do przodu/do tylu
 public:
     FieldMove(int num, char s, std::string d, int n) : SpecialField(num, s, d), HowMany(n) {}
+    ~FieldMove() {}
     int Event(Player* p)
     {
         p->SetFieldNumber(p->GetFieldNumber()+HowMany);
@@ -230,6 +236,7 @@ private:
     char Attribute;
 public:
     FieldAttributeUp(int num, char s, std::string d, int n, char a) : SpecialField(num, s, d), HowMany(n), Attribute(a) {}
+    ~FieldAttributeUp() {}
     int Event(Player* p)
     {
         switch(Attribute)
@@ -254,7 +261,7 @@ private:
     std::string WinMessage, LoseMessage;
 public:
     SpecialFieldWinOrLose(int num, char s, std::string d, std::string win, std::string lose) : SpecialField(num, s, d), WinMessage(win), LoseMessage(lose) {}
-
+    virtual ~SpecialFieldWinOrLose() {}
     std::string GetWinMessage()
     {
         return WinMessage;
@@ -272,6 +279,7 @@ private:
     char Attribute;
 public:
     FieldLoseTurn(int num, char s, std::string d, std::string win, std::string lose, int n, char a) : SpecialFieldWinOrLose(num, s, d, win, lose), AttributeThreshold(n), Attribute(a) {}
+    ~FieldLoseTurn() {}
     int Event(Player* p)
     {
         int attribute_level;
@@ -304,6 +312,7 @@ private:
     char Attribute;
 public:
     FieldFight(int num, char s, std::string d, std::string win, std::string lose, char a) : SpecialFieldWinOrLose(num, s, d, win, lose), Attribute(a) {}
+    ~FieldFight() {}
     int CalculateDiceTreshold(int player_attribute)
     {
         return (55-player_attribute)/4;
@@ -315,6 +324,7 @@ public:
 
 // ---------------------------------------------------
 // DEKLARACJA GAME
+// ---------------------------------------------------
 class Game
 {
 private:
@@ -322,6 +332,7 @@ private:
     int PlayersNumber;
     std::vector<Player*> Players;
     std::vector<SpecialField*> SpecialFields;
+    std::vector<Player*> Result;
     std::vector<std::vector<char>> Board
     {
         {'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', 'M', '#'},
@@ -357,14 +368,17 @@ private:
     // ROZGRYWKA
     bool IsOver();
     void Move(Player* p, int n);
+    void ResetGame();
+    void GameEnd();
 
 public:
     Game();
-//    ~Game(); // delete na elementach wektorow Players i SpecialFields, albo smart pointery?
+    ~Game();
 
     static int RollDice();
     static void WaitForEnter();
 
+    void Menu();
     void Start();
     void Play();
 };

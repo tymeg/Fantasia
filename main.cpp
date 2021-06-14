@@ -5,8 +5,13 @@ using namespace std;
 int main()
 {
     Game test;
-    test.Start();
-    test.Play();
+
+    while(1)
+    {
+        test.Menu();
+        test.Start();
+        test.Play();
+    }
 
     return 0;
 }
