@@ -1,4 +1,7 @@
-#include "classes.h"
+#include <fstream>
+#include <iostream>
+
+#include "game.h"
 using namespace std;
 
 // ---------------
@@ -40,10 +43,11 @@ void Game::DrawBoard()
 {
     ShowSpecialFieldsOnBoard();
     ShowPlayersOnBoard();
+    cout << endl;
     for (int i=0; i<(int)Board.size(); i++)
     {
         for (int j=0; j<(int)Board[i].size(); j++)
-            cout << Board[i][j];
+            cout << " " << Board[i][j];
 
         switch(i) // wypisywanie graczy wraz z atrybutami
         {
@@ -105,7 +109,7 @@ void Game::Move(Player* p, int n)
     DrawBoard();
     if (p->GetFieldNumber() == FieldsNumber-1)
     {
-        cout << endl << "Gracz " << p->GetName() << " na mecie!";
+        cout << endl << " Gracz " << p->GetName() << " na mecie!";
         System::Sleep1Sec();
         Result.push_back(p);
         return;
@@ -117,8 +121,8 @@ void Game::Move(Player* p, int n)
         SpecialField* spec = SpecialFields[i];
         if (field_after == spec->GetNumber())
         {
-            cout << endl << spec->GetDescription() << endl;
-            cout << "[ENTER] Dalej";
+            cout << endl << " " << spec->GetDescription() << endl;
+            cout << " [ENTER] Dalej";
             WaitForEnter();
             int flag = spec->Event(p);
             if (flag == 2) {}
@@ -126,33 +130,33 @@ void Game::Move(Player* p, int n)
             {
                 SpecialFieldWinOrLose* win_or_lose = (SpecialFieldWinOrLose*)spec;
                 if (flag == 1)
-                    cout << "\r" << win_or_lose->GetWinMessage();
+                    cout << "\r " << win_or_lose->GetWinMessage();
                 else if (flag == 0)
-                    cout << "\r" << win_or_lose->GetLoseMessage() << endl << "Tracisz kolejke!";
+                    cout << "\r " << win_or_lose->GetLoseMessage() << endl << " Tracisz kolejke!";
                 else if (flag == -1) // FieldFight, przegrana, gracz klasy Rycerz - mozliwosc uzycia mocy specjalnej (jesli jeszcze nie zuzyta, sprawdza to FieldFight)
                 {
                     System::ClearScreen();
                     DrawBoard();
-                    cout << "Aby uniknac porazki, mozesz uzyc Mocy Specjalnej!" << endl
-                         << "[ENTER] Dalej [M] Uzyj Mocy Specjalnej";
+                    cout << " Aby uniknac porazki, mozesz uzyc Mocy Specjalnej!" << endl
+                         << " [ENTER] Dalej [M] Uzyj Mocy Specjalnej";
                     while (1)
                     {
                         int key = System::GetKey();
                         if (key == System::ENTER())
                         {
-                            cout << "\r" << win_or_lose->GetLoseMessage() << "              " << endl << "Tracisz kolejke!";
+                            cout << "\r " << win_or_lose->GetLoseMessage() << "              " << endl << " Tracisz kolejke!";
                             break;
                         }
                         else if (key == 'm')
                         {
                             p->SpecialPower(Players);
                             p->ToggleUsedSpecialPower();
-                            cout << "\r" << win_or_lose->GetWinMessage() << "               ";
+                            cout << "\r " << win_or_lose->GetWinMessage() << "               ";
                             break;
                         }
                     }
                 }
-                cout << endl << "[ENTER] Dalej";
+                cout << endl << " [ENTER] Dalej";
                 WaitForEnter();
             }
         }
@@ -163,13 +167,20 @@ void Game::GameEnd() // wypisanie wynikow wedlug kolejnosci w wektorze Result, w
 {
     System::ClearScreen();
     System::HideCursor();
-    cout << "Bla bla bla - koniec fabuly.";
 
-    cout << endl << endl << "Wyniki: " << endl;
+    cout << endl << " Wyniki: " << endl;
     for (int i=0; i<(int)Result.size(); i++)
-        cout << i+1 << ". " << Result[i]->GetName() << endl;
+        cout << " " << i+1 << ". " << Result[i]->GetName() << endl;
 
-    cout << endl << "[ENTER] Powrot do Menu";
+    cout << endl << endl;
+
+    string text; // wypisanie zakonczenia gry z pliku
+    ifstream readfile(Ending);
+    while(getline (readfile, text))
+        cout << text << endl;
+    readfile.close();
+
+    cout << endl << endl << " [ENTER] Powrot do Menu";
     WaitForEnter();
 
     Result.clear();
@@ -189,12 +200,13 @@ void Game::ResetGame() // czyszczenie wektora Players
 // KOSNTRUKTOR
 Game::Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specjalnych
 {
-    SpecialFields.push_back(new FieldAttributeUp(3, '$', "O! Jestes silniejszy!", 3, 's'));
-    SpecialFields.push_back(new FieldMove(8, '+', "Skrot!", 4));
-    SpecialFields.push_back(new FieldLoseTurn(5, 'X', "Spotykasz Golluma, ktory nie chce cie przepuscic, jesli nie rozwiazesz jego zagadki...", "Tak! Udzielasz poprawnej odpowiedzi i Gollum cie puszcza.", "Niestety, nie mozesz wymyslec odpowiedzi. Wracasz sie i wybierasz inna droge.", 10, 'i'));
-    SpecialFields.push_back(new FieldLoseTurn(11, 'X', "Droge zagradza wielki, ciezki kamien...", "Udaje ci sie go troche przepchnac i przejsc dalej.", "Probujesz nieco go przepchnac, ale nic z tego, nie masz tyle sily. Wracasz sie i szukasz okreznej drogi.", 15, 's'));
-    SpecialFields.push_back(new FieldFight(13, 'W', "Atakuje cie bandyta!", "Spuszczasz mu porzadne lanie! Po otrzymaniu kilku niezlych ciosow rzezimieszek rzuca sie w ucieczke :)", "Dostajesz kilka mocnych ciosow, tracisz przytomnosc. Dopiero po godzinie budzisz sie, oczywiscie bez pieniedzy :(", 's'));
-    SpecialFields.push_back(new FieldFight(4, 'W', "Przed toba materializuje sie potezny czarnoksieznik!", "Przechytrzasz go xD Brawo!", "Mag pokonuje cie swoimi czarami. Potrzebujesz regeneracji xD", 'i'));
+
+    SpecialFields.push_back(new FieldAttributeUp(2, "O! Jestes silniejszy!", 3, 's'));
+    SpecialFields.push_back(new FieldFight(4, "Przed toba materializuje sie potezny czarnoksieznik!", "Przechytrzasz go xD Brawo!", "Mag pokonuje cie swoimi czarami. Potrzebujesz regeneracji xD", 'i'));
+    SpecialFields.push_back(new FieldLoseTurn(5, "Spotykasz Golluma, ktory nie chce cie przepuscic, jesli nie rozwiazesz jego zagadki...", "Tak! Udzielasz poprawnej odpowiedzi i Gollum cie puszcza.", "Niestety, nie mozesz wymyslec odpowiedzi. Wracasz sie i wybierasz inna droge.", 10, 'i'));
+    SpecialFields.push_back(new FieldMove(8, "Skrot!", 4));
+    SpecialFields.push_back(new FieldLoseTurn(11, "Droge zagradza wielki, ciezki kamien...", "Udaje ci sie go troche przepchnac i przejsc dalej.", "Probujesz nieco go przepchnac, ale nic z tego, nie masz tyle sily. Wracasz sie i szukasz okreznej drogi.", 15, 's'));
+    SpecialFields.push_back(new FieldFight(13, "Atakuje cie bandyta!", "Spuszczasz mu porzadne lanie! Po otrzymaniu kilku niezlych ciosow rzezimieszek rzuca sie w ucieczke :)", "Dostajesz kilka mocnych ciosow, tracisz przytomnosc. Dopiero po godzinie budzisz sie, oczywiscie bez pieniedzy :(", 's'));
 }
 
 // DESTRUKTOR
@@ -212,7 +224,7 @@ Game::~Game() // delete na elementach wektorow Players i SpecialFields, albo sma
 int Game::RollDice()
 {
     int los = rand()%6 + 1;
-    cout << "\rWyrzuciles " << los;
+    cout << "\r Wyrzuciles " << los;
     if (los == 1)
         cout << " oczko!                                    ";
     else if (los == 5 || los == 6)
@@ -247,7 +259,8 @@ void Game::Menu()
              << " #   # # # #  #  # #   # # # #" << endl
              << " #   # # # #  #  # # ### # # #" << endl
              << "                       by     " << endl
-             << "                         Tymeg" << endl
+             << "                         Tymeg" << endl << endl
+
              << "         [1] START            " << endl
              << "         [2] ZASADY           " << endl
              << "         [3] WYJSCIE          " << endl;
@@ -262,7 +275,12 @@ void Game::Menu()
             {
                 System::ClearScreen();
                 cout << "[ESC] Menu" << endl << endl;
-                cout << " Zasady sa tak proste, ze nie ma czego tlumaczyc";
+
+                string text; // wypisanie zasad gry z pliku
+                ifstream readfile(Rules);
+                while(getline (readfile, text))
+                    cout << text << endl;
+                readfile.close();
 
                 while(1)    // powrot do menu
                 {
@@ -274,7 +292,8 @@ void Game::Menu()
             else if (key == '3') // WYJSCIE
                 exit(0);
         }
-        menu:;
+menu:
+        ;
     }
 }
 
@@ -282,10 +301,19 @@ void Game::Start()
 {
     System::ClearScreen();
     System::HideCursor();
-    cout << "Bla bla bla, wprowadzenie do historii\nWcisnij ENTER by kontynuowac...";
+    cout << endl;
+
+    string text; // wypisanie wprowadzenia do opowiesci
+    ifstream readfile(Beginning);
+    while(getline (readfile, text))
+        cout << text << endl;
+    readfile.close();
+
+    cout << endl << endl << " Wcisnij ENTER by kontynuowac...";
     WaitForEnter();
     System::ClearScreen();
-    cout << "Wybierz liczbe graczy:\n[2] [3] [4]";
+    cout << endl << " Wybierz liczbe graczy:" << endl << endl
+         << " [2] [3] [4]";
     while (1)
     {
         int key = System::GetKey();
@@ -299,14 +327,14 @@ void Game::Start()
     {
         System::ClearScreen();
         string name;
-        cout << "Graczu " << i+1 << ", wprowadz swoje imie (max 10 liter): ";
+        cout << endl << " Graczu " << i+1 << ", wprowadz swoje imie (max 10 liter): ";
         cin >> name;
         if (name.length() > 10)
             name = name.substr(0, 10);
 
         System::ClearScreen();
-        cout << name << ", wybierz klase postaci:" << endl << endl
-              << " [R] Rycerz  - SILA 20, ZRECZNOSC 10, INTELIGENCJA 5\n     Moc Specjalna: Szal Bitewny \n     W przypadku przegranej walki mozesz odwrocic losy i uniknac utraty kolejki" << endl << endl
+        cout << endl << " " << name << ", wybierz klase postaci:" << endl << endl
+             << " [R] Rycerz  - SILA 20, ZRECZNOSC 10, INTELIGENCJA 5\n     Moc Specjalna: Szal Bitewny \n     W przypadku przegranej walki mozesz odwrocic losy i uniknac utraty kolejki" << endl << endl
              << " [L] Lucznik - SILA 5,  ZRECZNOSC 20, INTELIGENCJA 10\n     Moc specjalna: Sprint \n     W najblizszym ruchu przemiescisz sie o dwukrotnosc liczby wyrzuconych oczek" << endl << endl
              << " [M] Mag     - SILA 5,  ZRECZNOSC 10, INTELIGENCJA 20\n     Moc specjalna: Lodowy Deszcz \n     Pozostali gracze traca jedna kolejke" << endl;
 
@@ -330,8 +358,8 @@ void Game::Start()
         }
 next:
         System::ClearScreen();
-        cout << "Utworzono postac!";
-//            System::Sleep1Sec();
+        cout << endl << " Utworzono postac!";
+        System::Sleep1Sec();
     }
     System::ClearScreen();
     srand(time(0));
@@ -350,11 +378,11 @@ void Game::Play()
                 System::ClearScreen();
                 System::HideCursor();
                 DrawBoard();
-                cout << "Kolej na ciebie, " << player->GetName() << "!" << endl
-                     << "[ENTER] Rzuc kostka";
+                cout << " Kolej na ciebie, " << player->GetName() << "!" << endl
+                     << " [ENTER] Rzuc kostka";
                 if (player->GetClass() == "Rycerz" || player->CheckUsedSpecialPower())
                 {
-                    cout << endl << endl << "[ESC] Wyjdz do Menu";
+                    cout << endl << endl << " [ESC] Wyjdz do Menu";
                     while (1)
                     {
                         int key = System::GetKey();
@@ -372,7 +400,7 @@ void Game::Play()
                 else
                 {
                     cout << " [M] Uzyj Mocy Specjalnej";
-                    cout << endl << endl << "[ESC] Wyjdz do Menu";
+                    cout << endl << endl << " [ESC] Wyjdz do Menu";
                     while (1)
                     {
                         int key = System::GetKey();
@@ -382,7 +410,7 @@ void Game::Play()
                         {
                             player->SpecialPower(Players);
                             player->ToggleUsedSpecialPower();
-                            cout << endl << "[ENTER] Rzuc kostka";
+                            cout << endl << " [ENTER] Rzuc kostka";
                             WaitForEnter();
                             break;
                         }
@@ -427,17 +455,17 @@ int FieldFight::Event(Player* p)
         break;
     }
     int threshold = CalculateDiceTreshold(attribute_level);
-    cout << "\rMasz 3 rzuty kostka. Aby zwyciezyc, musisz wyrzucic lacznie nastepujaca liczbe oczek: " << threshold << endl;
+    cout << "\r Masz 3 rzuty kostka. Aby zwyciezyc, musisz wyrzucic lacznie nastepujaca liczbe oczek: " << threshold << endl;
     int i=0, sum=0;
     while(i<3)
     {
-        cout << "\r[ENTER] Rzuc kostka   ";
+        cout << "\r [ENTER] Rzuc kostka   ";
         Game::WaitForEnter();
         sum += Game::RollDice();
         System::Sleep1Sec();
         i++;
     }
-    cout << "\rLacznie wyrzucono: " << sum << "       ";
+    cout << "\r Lacznie wyrzucono: " << sum << "       ";
     System::Sleep1Sec();
     if (sum >= threshold) // win
         return 1;

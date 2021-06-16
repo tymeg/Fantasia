@@ -1,0 +1,19 @@
+ Fantasia to prosta, fabularyzowana gra planszowa.
+
+ Na poczatku kazdy gracz wybiera klase postaci: Rycerz, Lucznik lub Mag,
+ ktore roznia sie poczatkowym poziomem Atrybutow: Sily, Zrecznosci i Inteligencji
+ oraz maja rozne Moce Specjalne. Gracze po kolei rzucaja kostka,
+ przemieszczajac swoj pionek o odpowiednia liczbe pol.
+
+ UWAGA! Kazdy gracz moze tylko raz w ciagu gry
+ skorzystac ze swojej Mocy Specjalnej i jest to
+ jedyny nielosowy element gry - uzyj jej w odpowiednim momencie!
+
+ Mozna natrafic na Pola Specjalne, ktore wiaza sie z rozmaitymi zdarzeniami:
+ - przemieszczenie o kilka pol do przodu lub tylu
+ - wzrost okreslonego Atrybutu
+ - utrata kolejki (o ile nie posiadasz odpowiedniego poziomu jednego z Atrybutow)
+ - walka - 3 rzuty kostka, w ktorych nalezy uzyskac minimalna liczbe oczek,
+	   zalezna od poziomu jednego z Atrybutow, aby nie utracic kolejki
+
+ Zwycieza oczywiscie ten, kto pierwszy dotrze na mete planszy. Powodzenia!
