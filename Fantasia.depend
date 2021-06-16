@@ -26,7 +26,7 @@
 1623801923 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\game.h
 	"players_fields.h"
 
-1623802497 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\players_fields.h
+1623886661 c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\players_fields.h
 	<iostream>
 	<stdio.h>
 	<stdlib.h>
@@ -36,7 +36,7 @@
 	<map>
 	"system.h"
 
-1623797839 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\game.cpp
+1623877588 source:c:\users\user\desktop\informatyka uwr\2 sem\programowanie obiektowe\projekt\fantasia\game.cpp
 	<fstream>
 	<iostream>
 	"game.h"

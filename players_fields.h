@@ -126,7 +126,7 @@ public:
     ~Knight() {}
     void SpecialPower(std::vector<Player*> &players)
     {
-        std::cout << "\rUzywasz Szalu Bitewnego!                ";
+        std::cout << " Uzywasz Szalu Bitewnego!                ";
         for (int i=0; i<(int)players.size(); i++)
         {
             if (players[i]->GetNumber() == GetNumber())
@@ -151,7 +151,7 @@ public:
     ~Archer() {}
     void SpecialPower(std::vector<Player*> &players)
     {
-        std::cout << "\rUzywasz Sprintu - w tej kolejce wynik rzutu kostka bedzie podwojony!";
+        std::cout << " Uzywasz Sprintu - w tej kolejce wynik rzutu kostka bedzie podwojony!";
         for (int i=0; i<(int)players.size(); i++)
         {
             if (players[i]->GetNumber() == GetNumber())
@@ -176,7 +176,7 @@ public:
     ~Mage() {}
     void SpecialPower(std::vector<Player*> &players)
     {
-        std::cout << "\rUzywasz Lodowego Deszczu - kazdy z pozostalych graczy traci kolejke!";
+        std::cout << " Uzywasz Lodowego Deszczu - kazdy z pozostalych graczy traci kolejke!";
         for (int i=0; i<(int)players.size(); i++)
         {
             if (players[i]->GetNumber() != GetNumber())
@@ -223,7 +223,7 @@ private:
 public:
     FieldMove(int num, std::string d, int n) : SpecialField(num, d, '+'), HowMany(n)
     {
-        if (num<0)
+        if (n<0)
             Symbol = '-';
     }
     ~FieldMove() {}
