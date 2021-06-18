@@ -60,6 +60,12 @@ public:
     Game();
     ~Game();
 
+    // zablokowanie kopiowania i przenoszenia dla obiektow klasy Game
+    Game(const Game&) = delete;
+    Game(Game&&) = delete;
+    Game& operator=(const Game&) = delete;
+    Game& operator=(Game&&) = delete;
+
     static int RollDice();
     static void WaitForEnter();
 

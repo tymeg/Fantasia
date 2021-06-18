@@ -5,7 +5,7 @@
 #include <conio.h>
 #include <windows.h>
 
-class System // do zmiany w przypadku portowania na inny system
+class System // do zmiany w przypadku portowania na inny system (funkcjonalnosci z conio.h i windows.h opakowane w metody statyczne klasy System)
 {
 private:
     std::string OS = "Windows";

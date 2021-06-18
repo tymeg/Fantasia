@@ -207,15 +207,16 @@ void Game::ResetGame() // czyszczenie wektora Players
 // KOSNTRUKTOR
 Game::Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specjalnych
 {
-    SpecialFields.push_back(new FieldLoseTurn(2, "Przechodzisz przez jaskinie, w ktorej spotykasz Golluma, ktory nie chce cie przepuscic,\n jesli nie odgadniesz jego zagadki:\n \"Co to jest? Zbior z dodawaniem i mnozeniem, ma je Wladca?\"", "Oczywiscie, ze Pierscien! Przechodzisz dalej.", "Niestety nie mozesz wymyslec odpowiedzi.\n Wracasz sie i wybierasz inna droge.", 10, 'i'));
     SpecialFields.push_back(new FieldFight(4, "Na drodze materializuje sie Zlowrogi Czarnoksieznik (buuu!).", "Unikasz jego kuli ognia i sopli lodu, a w pewnym momencie udaje ci sie\n przechytrzyc czarodzieja, odbijajac jeden z jego pociskow wprost w jego twarz!\n Uciekasz, zanim temu sie mana zregeneruje.", "Niestety dostajesz jedna z kuli ognia Czarnoksieznika.\n Zaczynasz sie palic i biegniesz szukac jakiegos jeziora,\n zeby w nim ugasic plomien (co bierze troche czasu).",'i'));
     SpecialFields.push_back(new FieldAttributeUp(8, "Odbywasz trening z Robinem Hoodem, losowo napotkanym na szlaku.\n Swiat jest maly.", 5, 'd'));
     SpecialFields.push_back(new FieldMove(11, "Idziesz przez gory. Dostrzegasz, ze swiatlo przeswituje przez wodospad.\n Podchodzisz... O! Za wodospadem jest skrot!", 4));
     SpecialFields.push_back(new FieldFight(14, "Trafiasz na zasadzke bandytow!", "Wow, niezbyt oni inteligentni. Podczas gdy atakowal jeden, reszta czekala z boku.\n Wychodzisz z walki zwyciesko dzieki znacznej przewadze silowej.", "Jeden z nich oglusza cie. Po czasie odzyskujesz przytomnosc...\n Zginely twoje kosztownosci! Potrzebujesz regeneracji.", 's'));
     SpecialFields.push_back(new FieldLoseTurn(18, "W lesie spotyka cie grad elfich strzal lecacy z koron drzew!", "Biegniesz, zrecznie unikajac pociskow. Spektakularna ucieczka!", "Poruszasz sie nieco ociezale. Krzyczysz \"ja w sprawach dyplomatycznych!\",\n ale i tak dostajesz jeden pocisk w ramie. Musisz zatamowac krwotok.", 15, 'd'));
     SpecialFields.push_back(new FieldAttributeUp(22, "Byl tu jakis wypadek. Obok wozu porozrzucane sa ksiazki.\n Bierzesz jedna do reki, czytasz chwile, i od razu czujesz sie\n jakis taki bardziej inteligentny (tak to dziala w zyciu?).", 5, 'i'));
-    SpecialFields.push_back(new FieldMove(30, "Gubisz sie w Labiryncie Minotaura, bo nic nie masz (w sensie nie masz nici).\n Gdzie jest wyjscie?!", -5));
+    SpecialFields.push_back(new FieldLoseTurn(25, "Przechodzisz przez jaskinie, w ktorej spotykasz Golluma, ktory nie chce cie przepuscic,\n jesli nie odgadniesz jego zagadki:\n \"Co to jest? Zbior z dodawaniem i mnozeniem, ma je Wladca?\"", "Oczywiscie, ze Pierscien! Przechodzisz dalej.", "Niestety nie mozesz wymyslec odpowiedzi.\n Wracasz sie i wybierasz inna droge.", 10, 'i'));
+    SpecialFields.push_back(new FieldMove(30, "Gubisz sie w Labiryncie Minotaura, bo nic nie masz (w sensie nie masz nici).\n Gdzie jest wyjscie?!", -4));
     SpecialFields.push_back(new FieldAttributeUp(34, "Hermiona Granger?? Tutaj?? Gadacie chwile, jej inteligencja promieniuje na ciebie.", 5, 'i'));
+    SpecialFields.push_back(new FieldMove(36, "Ikar \"podwozi\" cie na swoich skrzydlach (zaraz, on zyje?!).\n Dobrze, ze troche wazysz, bo jeszcze byscie sie niebezpiecznie zblizyli do slonca...", 3));
     SpecialFields.push_back(new FieldFight(40, "Thor wyzywa cie na pojedynek...", "ZWYCIESTWO! Niezbyt niesmiertelni ci bogowie...", "Cudem uchodzisz z zyciem, uciekajac przed gniewnym mlotem...", 's'));
     SpecialFields.push_back(new FieldLoseTurn(45, "Zaczepia cie grupa krasnoludow: \"Z nami sie nie napijesz?\"", "Grzecznie odmawiasz, bo przeciez ci sie spieszy.", "Ulegasz dobrodusznym kompanom, schodzi wam do bialego rana na oproznianiu\n kufli piwa oraz sluchaniu Percival Schuttenbach. A rano kac...", 15, 'i'));
     SpecialFields.push_back(new FieldAttributeUp(47, "O, Miejsce Mocy! Czujesz rosnaca w tobie sile!", 5, 's'));
@@ -223,13 +224,12 @@ Game::Game() : Height(12), Length(15), FieldsNumber(76) // utworzenie pol specja
     SpecialFields.push_back(new FieldAttributeUp(54, "Kapliczka Artemidy. Jedna modlitwa, +5 do zrecznosci.", 5, 'd'));
     SpecialFields.push_back(new FieldFight(59, "Atak goblinow. Skubance sa szybkie!", "Nie mialy szans! Same sie prosily.", "Ogluszenie. Nastepnym razem wam pokaze...", 'd'));
     SpecialFields.push_back(new FieldMove(63, "Ta droga prowadzi przez Olimp, trzeba sie wrocic.", -3));
-    SpecialFields.push_back(new FieldLoseTurn(68, "Straznik przepusci cie przez miasto, tylko jak wygrasz z nim w Fantasie.", "Ogrywasz straznika dzieki wysokiemu IQ, ktorego jak wiadomo wymaga ta gra.", "Niestety, porazka. Zla taktyke obrales.", 20, 'i'));
+    SpecialFields.push_back(new FieldLoseTurn(68, "Straznik przepusci cie przez miasto tylko jak wygrasz z nim w Fantasie.", "Ogrywasz straznika dzieki wysokiemu IQ, ktorego jak wiadomo wymaga ta gra.", "Niestety, porazka. Zla taktyke obrales.", 20, 'i'));
     SpecialFields.push_back(new FieldFight(72, "Napada cie gorski troll!", "Spuszczasz mu porzadne lanie!", "Hehe, zostales strollowany.", 's'));
-
 }
 
 // DESTRUKTOR
-Game::~Game() // delete na elementach wektorow Players i SpecialFields, albo smart pointery?
+Game::~Game() // zwalnia pamiec przydzielona dla graczy i pol specjalnych, czysci wektory
 {
     for (auto f : SpecialFields)
         delete f;
@@ -238,6 +238,9 @@ Game::~Game() // delete na elementach wektorow Players i SpecialFields, albo sma
     for (auto p : Players)
         delete p;
     Players.clear();
+
+    Board.clear();
+    FieldsToBoard.clear();
 }
 
 int Game::RollDice()

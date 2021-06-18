@@ -4,13 +4,13 @@ using namespace std;
 
 int main()
 {
-    Game test;
+    Game game;
 
     while(1)
     {
-        test.Menu();
-        test.Start();
-        test.Play();
+        game.Menu();
+        game.Start();
+        game.Play();
     }
 
     return 0;
