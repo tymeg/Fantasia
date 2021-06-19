@@ -1,7 +1,9 @@
 #include <fstream>
 #include <iostream>
+#include <time.h>
 
 #include "game.h"
+#include "system.h"
 using namespace std;
 
 // ---------------
@@ -193,8 +195,11 @@ void Game::GameEnd() // wypisanie wynikow wedlug kolejnosci w wektorze Result, w
     Result.clear();
 }
 
-void Game::ResetGame() // czyszczenie wektora Players
+void Game::ResetGame() // czyszczenie pol, na ktorych znajdowali sie gracze, a nastepnie czyszczenie wektora Players
 {
+    for (int i=0; i<(int)Players.size(); i++)
+        ClearField(Players[i]->GetFieldNumber());
+
     for (auto p : Players)
         delete p;
     Players.clear();
@@ -440,7 +445,6 @@ void Game::Play()
                         }
                         else if (key == System::ESC()) // reset gry, wyjscie do menu
                         {
-                            ClearField(player->GetFieldNumber());
                             ResetGame();
                             Menu();
                             return; // wychodzi z Play, w glownej petli w main wykona sie ponownie Start i Play
@@ -454,7 +458,6 @@ void Game::Play()
             }
         }
     }
-    ClearField(FieldsNumber-1);
     GameEnd();
     ResetGame();
 }

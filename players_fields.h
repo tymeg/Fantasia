@@ -2,14 +2,8 @@
 #define PLAYERS_FIELDS_H_INCLUDED
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <time.h>
 #include <vector>
 #include <map>
-
-#include "system.h"
 
 // --------------------------------------
 // GRACZE I POLA - DEKLARACJE + DEFINICJE
