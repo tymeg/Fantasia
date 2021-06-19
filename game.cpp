@@ -184,7 +184,7 @@ void Game::GameEnd() // wypisanie wynikow wedlug kolejnosci w wektorze Result, w
     cout << endl << endl;
 
     string text; // wypisanie zakonczenia gry z pliku
-    ifstream readfile(Ending);
+    ifstream readfile("./inputfiles/"+Ending);
     while(getline (readfile, text))
         cout << text << endl;
     readfile.close();
@@ -304,7 +304,7 @@ void Game::Menu()
                 cout << "[ESC] Menu" << endl << endl;
 
                 string text; // wypisanie zasad gry z pliku
-                ifstream readfile(Rules);
+                ifstream readfile("./inputfiles/"+Rules);
                 while(getline (readfile, text))
                     cout << text << endl;
                 readfile.close();
@@ -331,7 +331,7 @@ void Game::Start()
     cout << endl;
 
     string text; // wypisanie wprowadzenia do opowiesci
-    ifstream readfile(Beginning);
+    ifstream readfile("./inputfiles/"+Beginning);
     while(getline (readfile, text))
         cout << text << endl;
     readfile.close();
@@ -419,7 +419,6 @@ void Game::Play()
                         {
                             ClearField(player->GetFieldNumber());
                             ResetGame();
-                            Menu();
                             return; // wychodzi z Play, w glownej petli w main wykona sie ponownie Start i Play
                         }
                     }

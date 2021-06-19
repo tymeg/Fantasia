@@ -13,7 +13,6 @@ private:
     const std::string Beginning = "poczatek.txt";
     const std::string Rules = "zasady.txt";
     const std::string Ending = "koniec.txt";
-    const std::string FieldsDesc = "pola.txt";
     int PlayersNumber;
     std::vector<Player*> Players;
     std::vector<SpecialField*> SpecialFields;
